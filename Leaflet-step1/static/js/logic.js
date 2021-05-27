@@ -1,5 +1,5 @@
 //Start Code
-var myMap = L.map("map", {
+var myMap = L.map("mapid", {
     center: [37.7749, -122.4194],
     zoom: 5
   });
@@ -18,3 +18,17 @@ L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
 var baseURL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
 
 var earthquakes = L.layerGroup();
+
+d3.json(baseURL).then(function(response) {
+
+  console.log(response);
+
+  for (var i = 0; i < response.length; i++) {
+    var location = response[i].location;
+
+    if (location) {
+      L.marker([location.coordinates[1], location.coordinates[0]]).addTo(myMap);
+    }
+  }
+
+});
