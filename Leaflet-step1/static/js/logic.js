@@ -1,6 +1,6 @@
 //Start Code
 //Create Tile Layer
-function createMap(){
+function createMap(earthquakeLayer) {
   var tileLayer = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
     attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
     tileSize: 512,
@@ -11,82 +11,48 @@ function createMap(){
   })
 
   var myMap = L.map("mapid", {
-    center: [37.7749, -122.4194],
-    zoom: 5
+    center: [37.6872, -97.3301],
+    zoom: 4
   });
   tileLayer.addTo(myMap);
-}
-// //Create Legend
-// var info = L.control({
-//   position: "upperright"
-// });
-
-// info.addTo(myMap);
-
 //Load in geojson data
 var baseURL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
 
-
-d3.json(baseURL).then(function(response) {
-  //console.log(response.features);
+//D3.json
+d3.json(baseURL).then(function (response) {
   earthquakes(response.features)
-
 });
 
-  function magnitude(data) {
-
-    //return radius = radius * 5
-    var data = [1, 2, 3, 4 ,5];
-    for (var i = 0; i < data.length; i++) {
-
-      // Conditionals for earthquake depth
-      if (data[i] > 5) {
-      }
-      else if (data[i] > 4) {
-      }
-      else if (data[i]> 3) {
-      }
-      else if (data[i] > 2){
-      }
-      else {
-      }
+function earthquakes(depth) {
+  for (var i = 0; i < depth; i++) {
+    //Conditionals for earthquake depth
+    var color = "";
+    if (depth[i].geometry.coordinates[2] > 90) {
+      color = "black";
     }
-  }
-  
-  function earthquakes(earthquake) {
-    for (var i = 0; i < earthquake.length; i++) {
-      console.log(earthquake[i])
-      // Conditionals for earthquake depth
-      // var color = "";
-  //     if (earthquake[i].depth > 90) {
-  //       color = "black";
-  //     }
-  //     else if (earthquake[i].depth > 70) {
-  //       color = "red";
-  //     }
-  //     else if (earthquake[i].depth > 50) {
-  //       color = "orange";
-  //     }
-  //     else if (earthquake[i].depth > 30){
-  //       color = "yellow";
-  //     }
-  //     else {
-  //       color = "light blue";
-  //     }
+    else if (depth[i].geometry.coordinates[2] > 70) {
+      color = "red";
+    }
+    else if (depth[i].geometry.coordinates[2] > 50) {
+      color = "orange";
+    }
+    else if (depth[i].geometry.coordinates[2] > 30) {
+      color = "yellow";
+    }
+    else {
+      color = "light blue";
     }
   }
 
-  // Add circles to map
-  //L.geoJSON(response).addTo(myMap);
-createMap();
+// GeoJSON layer
+L.geoJson(depth, {
+  // Maken cricles
+  pointToLayer: function(feature, coordinates) {
+    return L.circleMarker(coordinates);
+  },
+}).addTo(myMap);
+
+};
 
 
-
-
-
-
-
-
-
-
-
+}
