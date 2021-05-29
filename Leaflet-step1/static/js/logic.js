@@ -13,7 +13,6 @@ var magnitudeMarkers = [];
 function earthquakes(depth) {
   for (var i = 0; i < depth.length; i++) {
     //Conditionals for earthquake depth
-    console.log(depth[i].properties.mag)
     var color = "";
     if (depth[i].geometry.coordinates[2] > 90) {
       color = "black";
@@ -31,21 +30,17 @@ function earthquakes(depth) {
       color = "light blue";
     }
 
+    console.log(depth[i].geometry.coordinates)
+    var coordinates = depth[i].geometry.coordinates;
+
     depthMarkers.push(
-      L.circle(depth[i].geometry.coordinates, {
+      L.circle(coordinates, {
         stroke: false,
         fillOpacity: 0.75,
         color: color,
         fillColor: "white",
-      }));
-
-    magnitudeMarkers.push(
-      L.circle(depth[i].geometry.coordinates, {
-        stroke: false,
-        fillOpacity: 0.75,
         radius: ((depth[i].properties.mag) * 3)
       }));
-
   }
 }
 
@@ -76,7 +71,8 @@ function createMap(earthquakes) {
   };
 
   var overlayMaps = {
-    Earthquakes: earthquakes
+    "Depth": depthM,
+    "Magnitude": magnitudeM
   };
 
   var myMap = L.map("mapid", {
