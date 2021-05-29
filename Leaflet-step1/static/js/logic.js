@@ -7,11 +7,13 @@ d3.json(baseURL).then(function (response) {
   earthquakes(response.features)
 });
 
+var depthMarkers = [];
+var magnitudeMarkers = [];
 
 function earthquakes(depth) {
   for (var i = 0; i < depth.length; i++) {
     //Conditionals for earthquake depth
-    console.log(depth[i].geometry.coordinates)
+    console.log(depth[i].properties.mag)
     var color = "";
     if (depth[i].geometry.coordinates[2] > 90) {
       color = "black";
@@ -29,10 +31,6 @@ function earthquakes(depth) {
       color = "light blue";
     }
 
-
-    var depthMarkers = [];
-    var magnitudeMarkers = [];
-
     depthMarkers.push(
       L.circle(depth[i].geometry.coordinates, {
         stroke: false,
@@ -40,17 +38,14 @@ function earthquakes(depth) {
         color: color,
         fillColor: "white",
       }));
-      console.log()
+
     magnitudeMarkers.push(
       L.circle(depth[i].geometry.coordinates, {
         stroke: false,
         fillOpacity: 0.75,
-        radius: ((earthquakes(depth[i].properties)) * 3)
-      })
-    )
+        radius: ((depth[i].properties.mag) * 3)
+      }));
 
-    var depthM = L.layerGroup(depthMarkers);
-    var magnitudeM = L.layerGroup(magnitudeMarkers);
   }
 }
 
@@ -72,6 +67,9 @@ function createMap(earthquakes) {
     accessToken: API_KEY
   });
 
+  var depthM = L.layerGroup(depthMarkers);
+  var magnitudeM = L.layerGroup(magnitudeMarkers);
+
   var baseMaps = {
     "Light Map": lightmap,
     "Dark Map": darkmap
@@ -84,7 +82,7 @@ function createMap(earthquakes) {
   var myMap = L.map("mapid", {
     center: [37.6872, -97.3301],
     zoom: 4,
-    layers: [darkmap, earthquakes]
+    layers: [darkmap, depthM, magnitudeM]
   });
 
   L.control.layers(baseMaps, overlayMaps, {
