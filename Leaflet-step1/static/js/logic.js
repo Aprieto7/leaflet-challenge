@@ -11,6 +11,7 @@ d3.json(baseURL).then(function (response) {
 function earthquakes(depth) {
   for (var i = 0; i < depth.length; i++) {
     //Conditionals for earthquake depth
+    console.log(depth[i].geometry.coordinates)
     var color = "";
     if (depth[i].geometry.coordinates[2] > 90) {
       color = "black";
@@ -27,30 +28,30 @@ function earthquakes(depth) {
     else {
       color = "light blue";
     }
+
+
+    var depthMarkers = [];
+    var magnitudeMarkers = [];
+
+    depthMarkers.push(
+      L.circle(depth[i].geometry.coordinates, {
+        stroke: false,
+        fillOpacity: 0.75,
+        color: color,
+        fillColor: "white",
+      }));
+      console.log()
+    magnitudeMarkers.push(
+      L.circle(depth[i].geometry.coordinates, {
+        stroke: false,
+        fillOpacity: 0.75,
+        radius: ((earthquakes(depth[i].properties)) * 3)
+      })
+    )
+
+    var depthM = L.layerGroup(depthMarkers);
+    var magnitudeM = L.layerGroup(magnitudeMarkers);
   }
-
-
-  var depthMarkers = [];
-  var magnitudeMarkers = [];
-
-  depthMarkers.push(
-    L.circle(depth[i].geometry.coordinates, {
-      stroke: false,
-      fillOpacity: 0.75,
-      color: color,
-      fillColor: "white",
-    }));
-
-  magnitudeMarkers.push(
-    L.circle(depth[i].geometry.coordinates, {
-      stroke: false,
-      fillOpacity: 0.75,
-      radius: createMarkers((markers.properties.mag) * 3)
-    })
-  )
-
-  var depthM = L.layerGroup(depthMarkers);
-  var magnitudeM = L.layerGroup(magnitudeMarkers);
 }
 
 function createMap(earthquakes) {
@@ -64,13 +65,31 @@ function createMap(earthquakes) {
     accessToken: API_KEY,
   })
 
+  var darkmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+    attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+    maxZoom: 18,
+    id: "dark-v10",
+    accessToken: API_KEY
+  });
+
+  var baseMaps = {
+    "Light Map": lightmap,
+    "Dark Map": darkmap
+  };
+
+  var overlayMaps = {
+    Earthquakes: earthquakes
+  };
 
   var myMap = L.map("mapid", {
     center: [37.6872, -97.3301],
     zoom: 4,
-    layers: [lightmap]
+    layers: [darkmap, earthquakes]
   });
 
-
+  L.control.layers(baseMaps, overlayMaps, {
+    collapsed: false
+  }).addTo(myMap);
 }
+
 createMap();
