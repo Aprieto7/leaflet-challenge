@@ -7,8 +7,9 @@ d3.json(baseURL).then(function (response) {
   earthquakes(response.features)
 });
 
+
 function earthquakes(depth) {
-  for (var i = 0; i < depth; i++) {
+  for (var i = 0; i < depth.length; i++) {
     //Conditionals for earthquake depth
     var color = "";
     if (depth[i].geometry.coordinates[2] > 90) {
@@ -27,10 +28,34 @@ function earthquakes(depth) {
       color = "light blue";
     }
   }
+
+
+  var depthMarkers = [];
+  var magnitudeMarkers = [];
+
+  depthMarkers.push(
+    L.circle(depth[i].geometry.coordinates, {
+      stroke: false,
+      fillOpacity: 0.75,
+      color: color,
+      fillColor: "white",
+    }));
+
+  magnitudeMarkers.push(
+    L.circle(depth[i].geometry.coordinates, {
+      stroke: false,
+      fillOpacity: 0.75,
+      radius: createMarkers((markers.properties.mag) * 3)
+    })
+  )
+
+  var depthM = L.layerGroup(depthMarkers);
+  var magnitudeM = L.layerGroup(magnitudeMarkers);
 }
 
-//Create Tile Layer
-  var tileLayer = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+function createMap(earthquakes) {
+  //Create Tile Layer
+  var lightmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
     attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
     tileSize: 512,
     maxZoom: 18,
@@ -39,10 +64,13 @@ function earthquakes(depth) {
     accessToken: API_KEY,
   })
 
+
   var myMap = L.map("mapid", {
     center: [37.6872, -97.3301],
     zoom: 4,
+    layers: [lightmap]
   });
-  tileLayer.addTo(myMap);
-  
-  createImageBitmap()
+
+
+}
+createMap();
