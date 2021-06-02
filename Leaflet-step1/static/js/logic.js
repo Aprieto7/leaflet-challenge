@@ -52,24 +52,37 @@ function earthquakes(data) {
     }).addTo(myMap);
 
     //Create a Legend L.Control .onAdd blank div 
+    var legend = L.control({position: 'bottomright'});
+
+    // add legend to map
+    legend.onAdd = function () {
+    
+        var div = L.DomUtil.create('div', 'info legend')
+        
+        div.innerHTML = "<h3>Depth Legend</h3><table><tr><th>>90</th><td>#003300</td></tr><tr><th>>70</th><td>#cc0000</td></tr><tr><th>>50</th><td>#cc9900</td></tr><tr><th>>30</th><td>#53ff1a</td></tr><tr><th><30</th><td>#00ccff</td></tr></table>";
+
+        return div;
+    };
+    
+    legend.addTo(myMap);
 }
 
 function getColor(depth) {
     var color = "";
     if (depth > 90) {
-      color = "#fffff";
+      color = "#003300";
     }
     else if (depth > 70) {
-      color = "#ff000";
+      color = "#cc0000";
     }
     else if (depth > 50) {
-      color = "#ff0099";
+      color = "#cc9900";
     }
     else if (depth > 30) {
-      color = "#990099";
+      color = "#53ff1a";
     }
     else {
-      color = "#98ee00";
+      color = "#00ccff";
     }
     return color;
 }
